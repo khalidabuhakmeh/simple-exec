@@ -130,7 +130,7 @@ namespace SimpleExec
         /// <param name="echoPrefix">The prefix to use when echoing the command line and working directory (if specified) to standard error (stderr).</param>
         /// <param name="configureEnvironment">An action which configures environment variables for the command.</param>
         /// <param name="createNoWindow">Whether to run the command in a new window.</param>
-        /// <param name="cancellationToken">allows for killing the running process</param>
+        /// <param name="cancellationToken">Allows for killing the running process</param>
         /// <returns>
         /// A <see cref="Task{TResult}"/> representing the asynchronous running of the command and reading of standard output (stdout).
         /// The task result is a <see cref="string"/> representing the contents of standard output (stdout).
