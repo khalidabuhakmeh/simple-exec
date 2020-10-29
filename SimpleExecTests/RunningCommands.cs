@@ -77,7 +77,7 @@ namespace SimpleExecTests
         [Scenario]
         public void RunningAndCancellingACommand(Exception exception)
         {
-            var source = new CancellationTokenSource(TimeSpan.FromSeconds(3));
+            var source = new CancellationTokenSource(TimeSpan.FromSeconds(1));
 
             "When I run a long-running command async"
                 .x(async () => exception = await Record.ExceptionAsync(() =>

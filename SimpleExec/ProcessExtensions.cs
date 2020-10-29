@@ -19,22 +19,7 @@ namespace SimpleExec
             var tcs = new TaskCompletionSource<object>();
             var cancelled = false;
 
-            process.Exited += (s, e) =>
-            {
-                if (cancelled)
-                {
-                    tcs.TrySetCanceled(cancellationToken);
-                }
-                else
-                {
-                    tcs.SetResult(default);
-                }
-            };
-
-            process.EnableRaisingEvents = true;
-            process.EchoAndStart(noEcho, echoPrefix);
-
-            cancellationToken.Register(() => {
+            var registration = cancellationToken.Register(() => {
                 try
                 {
                     cancelled = true;
@@ -47,6 +32,22 @@ namespace SimpleExec
                     // and throw a different exception
                 }
             });
+
+            process.Exited += (s, e) =>
+            {
+                if (cancelled)
+                {
+                    registration.Dispose();
+                    tcs.TrySetCanceled(cancellationToken);
+                }
+                else
+                {
+                    tcs.SetResult(default);
+                }
+            };
+
+            process.EnableRaisingEvents = true;
+            process.EchoAndStart(noEcho, echoPrefix);
 
             return tcs.Task;
         }
