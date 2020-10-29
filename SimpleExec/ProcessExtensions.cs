@@ -35,9 +35,9 @@ namespace SimpleExec
 
             process.Exited += (s, e) =>
             {
+                registration.Dispose();
                 if (cancelled)
                 {
-                    registration.Dispose();
                     tcs.TrySetCanceled(cancellationToken);
                 }
                 else
