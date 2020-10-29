@@ -1,3 +1,5 @@
+using System.Threading;
+
 namespace SimpleExec
 {
     using System;
@@ -12,12 +14,31 @@ namespace SimpleExec
             process.WaitForExit();
         }
 
-        public static Task RunAsync(this Process process, bool noEcho, string echoPrefix)
+        public static Task RunAsync(this Process process, bool noEcho, string echoPrefix, CancellationToken cancellationToken = default)
         {
             var tcs = new TaskCompletionSource<object>();
-            process.Exited += (s, e) => tcs.SetResult(default);
+            var cancelled = false;
+
+            process.Exited += (s, e) =>
+            {
+                if (cancelled)
+                {
+                    tcs.TrySetCanceled(cancellationToken);
+                }
+                else
+                {
+                    tcs.SetResult(default);
+                }
+            };
+
             process.EnableRaisingEvents = true;
             process.EchoAndStart(noEcho, echoPrefix);
+
+            cancellationToken.Register(() => {
+                process.Kill();
+                cancelled = true;
+            });
+
             return tcs.Task;
         }
 

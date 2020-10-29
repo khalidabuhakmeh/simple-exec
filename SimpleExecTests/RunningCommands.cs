@@ -1,3 +1,7 @@
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+
 namespace SimpleExecTests
 {
     using System;
@@ -69,5 +73,19 @@ namespace SimpleExecTests
             "And the exception contains the exit code"
                 .x(() => Assert.Equal(1, ((NonZeroExitCodeException)exception).ExitCode));
         }
+
+        [Scenario]
+        public void RunningAndCancellingACommand(Exception exception)
+        {
+            var source = new CancellationTokenSource(TimeSpan.FromSeconds(3));
+
+            "When I run a long-running command async"
+                .x(async () => exception = await Record.ExceptionAsync(() =>
+                    Command.RunAsync("say", string.Join(" ", Enumerable.Repeat("cool", 1000)), cancellationToken: source.Token)));
+
+            "Then a Operation Canceled Exception is Thrown"
+                .x(() => Assert.IsType<TaskCanceledException>(exception));
+        }
+
     }
 }
