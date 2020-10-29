@@ -35,8 +35,17 @@ namespace SimpleExec
             process.EchoAndStart(noEcho, echoPrefix);
 
             cancellationToken.Register(() => {
-                process.Kill();
-                cancelled = true;
+                try
+                {
+                    cancelled = true;
+                    process.Kill();
+                }
+                catch
+                {
+                    // ignored
+                    // killing the process may timeout
+                    // and throw a different exception
+                }
             });
 
             return tcs.Task;
