@@ -81,7 +81,7 @@ namespace SimpleExecTests
 
             "When I run a long-running command async"
                 .x(async () => exception = await Record.ExceptionAsync(() =>
-                    Command.RunAsync("say", string.Join(" ", Enumerable.Repeat("cool", 1000)), cancellationToken: source.Token)));
+                    Command.RunAsync("ping", "localhost", cancellationToken: source.Token)));
 
             "Then a Operation Canceled Exception is Thrown"
                 .x(() => Assert.IsType<TaskCanceledException>(exception));
